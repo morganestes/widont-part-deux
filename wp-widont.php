@@ -92,7 +92,7 @@ class WidontPartDeux {
 			$this->plugin,
 			"{$this->plugin_shortname}_general_options",
 			array(
-				'label_for' => 'widont_tags',
+				'label_for' => "{$this->plugin_shortname}_extended_tags",
 			)
 		);
 		register_setting(
@@ -124,9 +124,9 @@ var_dump($options);
 
 		$tags = str_replace( '|', ' ', $extended_tags );
 
-		var_dump($tags);
+		var_dump($options);
 
-		echo '<input type="text" name="'. esc_attr( "$this->plugin_shortname[extended_tags]" ) . '" id="widont_tags" class="regular-text code" value="' . esc_attr( $tags ) . '" />';
+		echo '<input type="text" name="'. esc_attr( "$this->plugin_shortname[extended_tags]" ) . '" id="' . esc_attr( "{$this->plugin_shortname}_extended_tags" ) . '" class="regular-text code" value="' . esc_attr( $tags ) . '" />';
 		echo '<span class="description">' . __( '*Elements not allowed in posts will be automatically stripped.', $this->text_domain ) . '</span>';
 	}
 
