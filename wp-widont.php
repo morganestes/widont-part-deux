@@ -18,23 +18,16 @@ class WidontPartDeux {
 	protected $plugin_name = "Widon't Part Deux";
 	protected $plugin_shortname = 'widont_deux';
 	protected $text_domain = 'widont';
-	/**
-	 *
-	 *
-	 * @var array Unserialized array of settings from the database.
-	 */
-	public $options;
-
 
 	public function __construct() {
 		$this->plugin = plugin_basename( __FILE__ );
 
 		if ( false == get_option( $this->plugin_shortname ) ) {
 			add_option( $this->plugin_shortname );
-			$this->options = get_option( $this->plugin_shortname );
 		}
 
 		// Admin settings
+		$this->init();
 		add_action( 'admin_init', array( $this, 'plugin_register_settings' ) );
 		add_action( 'admin_menu', array( $this, 'plugin_preferences_menu' ) );
 		add_filter( "plugin_action_links_{$this->plugin}", array( $this, 'add_settings_link' ) );
@@ -45,7 +38,6 @@ class WidontPartDeux {
 	}
 
 	public function init() {
-
 
 		$this->version_check();
 	}
@@ -60,9 +52,9 @@ class WidontPartDeux {
 	protected function version_check() {
 		// @todo Implement logic if we need to do anything if they're different.
 		// For now, just store the current version.
-		$this->options['version'] = $this->version;
-
-		update_option( $this->plugin_shortname, $this->options );
+		$options = get_option( $this->plugin_shortname );
+		$options['version'] = $this->version;
+		update_option( $this->plugin_shortname, $options );
 	}
 
 	public function widont( $str = '' ) {
@@ -119,13 +111,20 @@ HTML;
 	}
 
 	function widont_extended_tags_input() {
-		if ( isset( $this->options ) || false != $this->options || array_key_exists( 'extended_tags', $this->options ) )
-			$extended_tags = $this->options['extended_tags'];
-		else
-			$this->options['extended_tags'] = '';
+		$options = get_option( $this->plugin_shortname );
+
+var_dump($options);
+		if ( isset( $options['extended_tags'] ) ) {
+			$extended_tags = $options['extended_tags'];
+		} else {
+			$extended_tags = '';
+			$options['extended_tags'] = '';
+			update_option( $this->plugin_shortname, $options );
+		}
 
 		$tags = str_replace( '|', ' ', $extended_tags );
 
+		var_dump($tags);
 
 		echo '<input type="text" name="'. esc_attr( "$this->plugin_shortname[extended_tags]" ) . '" id="widont_tags" class="regular-text code" value="' . esc_attr( $tags ) . '" />';
 		echo '<span class="description">' . __( '*Elements not allowed in posts will be automatically stripped.', $this->text_domain ) . '</span>';
@@ -164,28 +163,8 @@ HTML;
 ?>
 		</form>
 	</div>
-<?php } //function
+<?php }
 
-
-    /**
-     * Gets the value of options.
-     *
-     * @return array Unserialized array of settings from the database.
-     */
-    public function get_options()
-    {
-        return $this->options;
-    }
-
-    /**
-     * Sets the value of options.
-     *
-     * @param array Unserialized array of settings from the database. $options the options
-     */
-    public function set_options($options)
-    {
-        $this->options = $options;
-    }
-} //class
+}
 
 $widont = new WidontPartDeux();
