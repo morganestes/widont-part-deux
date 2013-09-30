@@ -13,12 +13,22 @@ namespace MorganEstes;
 
 class WidontPartDeux {
 
+	/**#@+
+	 * @var string
+	 */
 	protected $version = '1.0.1';
+	/**
+	 * The normalized path to the plugin file. Set in the constructor.
+	 */
 	protected $plugin = '';
 	protected $plugin_name = 'Widon’t Part Deux';
 	protected $plugin_shortname = 'widont_deux';
 	protected $plugin_textdomain = 'widont';
+	/**#@-*/
 
+/**
+ * Kicks off the settings for the rest of the plugin.
+ */
 	public function __construct() {
 		$this->plugin = plugin_basename( __FILE__ );
 
