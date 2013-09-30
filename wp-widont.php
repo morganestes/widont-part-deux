@@ -17,7 +17,7 @@ class WidontPartDeux {
 	protected $plugin = '';
 	protected $plugin_name = 'Widon’t Part Deux';
 	protected $plugin_shortname = 'widont_deux';
-	protected $text_domain = 'widont';
+	protected $plugin_textdomain = 'widont';
 
 	public function __construct() {
 		$this->plugin = plugin_basename( __FILE__ );
@@ -86,13 +86,13 @@ class WidontPartDeux {
 	function plugin_register_settings() {
 		add_settings_section(
 			"{$this->plugin_shortname}_general_options",
-			__( 'Extended Post/Page Content Elements', $this->text_domain ),
+			__( 'Extended Post/Page Content Elements', $this->plugin_textdomain ),
 			array( $this, 'widont_settings_header' ),
 			$this->plugin
 		);
 		add_settings_field(
 			'extended_tags',
-			__( 'HTML element names to filter*: ', $this->text_domain ),
+			__( 'HTML element names to filter*: ', $this->plugin_textdomain ),
 			array( $this, 'widont_extended_tags_input' ),
 			$this->plugin,
 			"{$this->plugin_shortname}_general_options",
@@ -117,7 +117,7 @@ class WidontPartDeux {
 		<p>With Widon’t your post titles are spared unwanted widows. Extend that courtesy to other tags in your posts* by entering tag names below.</p>
 		<p>No need to include angle brackets. Separate multiple tag names with a space or comma (e.g. <code>h3 h4 h5</code> or <code>p, li, span</code>).</p>
 HTML;
-		_e( $text, $this->text_domain );
+		_e( $text, $this->plugin_textdomain );
 	}
 
 	function widont_extended_tags_input() {
@@ -130,7 +130,7 @@ HTML;
 
 		$tags = esc_attr( $extended_tags );
 		$name = esc_attr( "$this->plugin_shortname[extended_tags]" );
-		$description = __( '*Elements not allowed in posts will be automatically stripped.', $this->text_domain );
+		$description = __( '*Elements not allowed in posts will be automatically stripped.', $this->plugin_textdomain );
 
 		$input = <<<HTML
 		<input type="text" name="$name" id="extended_tags" class="regular-text code" value="$tags" />
@@ -163,12 +163,12 @@ HTML;
 ?>
 	<div class="wrap">
 		<?php screen_icon(); ?>
-		<h2><?php  _e( "{$this->plugin_name} Options", $this->text_domain ); ?></h2>
+		<h2><?php  _e( "{$this->plugin_name} Options", $this->plugin_textdomain ); ?></h2>
 		<form method="post" action="options.php">
 		<?php
 		settings_fields( $this->plugin_shortname );
 		do_settings_sections( $this->plugin );
-		submit_button( __( 'Update Preferences', $this->text_domain ) );
+		submit_button( __( 'Update Preferences', $this->plugin_textdomain ) );
 ?>
 		</form>
 	</div>
