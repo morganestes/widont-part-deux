@@ -79,7 +79,7 @@ class WidontPartDeux {
 
 	public function plugin_preferences_menu() {
 		if ( function_exists( 'add_submenu_page' ) ) {
-			add_submenu_page( 'options-general.php', __( $this->plugin_name ), __( $this->plugin_name ), 'manage_options', __FILE__ , array( $this, 'options_page' ) );
+			add_submenu_page( 'options-general.php', __( $this->plugin_name ), __( $this->plugin_name ), 'manage_options', $this->plugin , array( $this, 'options_page' ) );
 		}
 	}
 
@@ -97,7 +97,7 @@ class WidontPartDeux {
 			$this->plugin,
 			"{$this->plugin_shortname}_general_options",
 			array(
-				'label_for' => "{$this->plugin_shortname}_extended_tags",
+				'label_for' => 'extended_tags',
 			)
 		);
 		register_setting(
@@ -107,6 +107,11 @@ class WidontPartDeux {
 		);
 	}
 
+	/**
+	 * Displays the HTML for the section inside the form.
+	 *
+	 * @return string
+	 */
 	function widont_settings_header() {
 		$text = <<<HTML
 		<p>With Widon’t your post titles are spared unwanted widows. Extend that courtesy to other tags in your posts* by entering tag names below.</p>
@@ -118,21 +123,21 @@ HTML;
 	function widont_extended_tags_input() {
 		$options = get_option( $this->plugin_shortname );
 
-var_dump($options);
+		$extended_tags = '';
 		if ( isset( $options['extended_tags'] ) ) {
-			$extended_tags = $options['extended_tags'];
-		} else {
-			$extended_tags = '';
-			$options['extended_tags'] = '';
-			update_option( $this->plugin_shortname, $options );
+			$extended_tags = str_replace( '|', ' ', $options['extended_tags'] );
 		}
 
-		$tags = str_replace( '|', ' ', $extended_tags );
+		$tags = esc_attr( $extended_tags );
+		$name = esc_attr( "$this->plugin_shortname[extended_tags]" );
+		$description = __( '*Elements not allowed in posts will be automatically stripped.', $this->text_domain );
 
-		var_dump($options);
+		$input = <<<HTML
+		<input type="text" name="$name" id="extended_tags" class="regular-text code" value="$tags" />
+		<span class="description">$description</span>
+HTML;
 
-		echo '<input type="text" name="'. esc_attr( "$this->plugin_shortname[extended_tags]" ) . '" id="' . esc_attr( "{$this->plugin_shortname}_extended_tags" ) . '" class="regular-text code" value="' . esc_attr( $tags ) . '" />';
-		echo '<span class="description">' . __( '*Elements not allowed in posts will be automatically stripped.', $this->text_domain ) . '</span>';
+		_e( $input );
 	}
 
 	function widont_validate_tags_input( $input ) {
@@ -163,8 +168,7 @@ var_dump($options);
 		<?php
 		settings_fields( $this->plugin_shortname );
 		do_settings_sections( $this->plugin );
-		do_settings_fields( 'widont_options', 'widont_main' );
-		submit_button( __( 'Update Preferences', $this->text_domain ), $type = 'primary', $name = 'submit', $wrap = true, $other_attributes = null );
+		submit_button( __( 'Update Preferences', $this->text_domain ) );
 ?>
 		</form>
 	</div>
