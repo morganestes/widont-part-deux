@@ -3,7 +3,7 @@
 Plugin Name: Widon’t Part Deux
 Plugin URI: https://github.com/morganestes/wp-widont
 Description: Eliminates widows in your post titles (and <a href="?page=wp-widont.php/wp-widont.php">posts</a>!) by inserting a non-breaking space between the last two words of a title. What is a widow? In typesetting, a widow is a single word on a line by itself at the end of a paragraph and is considered bad style.
-Version: 1.0.1
+Version: 1.1.0
 Author: Morgan Estes
 Author URI: http://www.morganestes.me/
 License: GPLv3
@@ -16,7 +16,7 @@ class WidontPartDeux {
 	/**#@+
 	 * @var string
 	 */
-	protected $version = '1.0.1';
+	protected $version = '1.1.0';
 	/**
 	 * The normalized path to the plugin file. Set in the constructor.
 	 */
@@ -79,7 +79,9 @@ class WidontPartDeux {
 
 	/**
 	 * Add settings link on plugin page.
+	 *
 	 * @param array $links Automatically provided by WordPress filter.
+	 *
 	 * @return array
 	 */
 	public function add_settings_link( $links ) {
@@ -89,6 +91,10 @@ class WidontPartDeux {
 		return $links;
 	}
 
+	/**
+	 * Check the version of installed plugin and update the options field.
+	 * @return bool If the update was successful.
+	 */
 	protected function version_check() {
 		// @todo Implement logic if we need to do anything if they're different.
 		// For now, just store the current version.
