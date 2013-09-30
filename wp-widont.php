@@ -26,9 +26,9 @@ class WidontPartDeux {
 	protected $plugin_textdomain = 'widont';
 	/**#@-*/
 
-/**
- * Kicks off the settings for the rest of the plugin.
- */
+	/**
+	 * Kicks off the settings for the rest of the plugin.
+	 */
 	public function __construct() {
 		$this->plugin = plugin_basename( __FILE__ );
 
@@ -36,8 +36,14 @@ class WidontPartDeux {
 			add_option( $this->plugin_shortname );
 		}
 
+		$this->plugin_init();
+	}
+
+	/**
+	 * Wrapper function to set up plugin settings.
+	 */
+	public function plugin_init() {
 		// Admin settings
-		$this->init();
 		add_action( 'admin_init', array( $this, 'plugin_register_settings' ) );
 		add_action( 'admin_menu', array( $this, 'plugin_preferences_menu' ) );
 		add_filter( "plugin_action_links_{$this->plugin}", array( $this, 'add_settings_link' ) );
@@ -45,25 +51,52 @@ class WidontPartDeux {
 		// Content filters
 		add_filter( 'the_title', array( $this, 'widont' ) );
 		add_filter( 'the_content', array( $this, 'filter_content' ) );
-	}
 
-	public function init() {
 		$this->version_check();
 	}
 
-	// Add settings link on plugin page
-	function add_settings_link( $links ) {
+	/**
+	 * Cheater method to get the options from the database.
+	 *
+	 * @uses get_option()
+	 * @return array|string An array of settings unserialized; empty string if not found.
+	 */
+	public function get_options(){
+		return get_option( $this->plugin_shortname, '' );
+	}
+
+	/**
+	 * Cheater method to update the options in the database.
+	 *
+	 * @uses update_option()
+	 * @param  array $options The full options field data to set.
+	 *
+	 * @return bool
+	 */
+	public function update_options( $options ) {
+		return update_option( $this->plugin_shortname, $options );
+	}
+
+	/**
+	 * Add settings link on plugin page.
+	 * @param array $links Automatically provided by WordPress filter.
+	 * @return array
+	 */
+	public function add_settings_link( $links ) {
 		$settings_link = "<a href='options-general.php?page={$this->plugin}'>Settings</a>";
 		array_unshift( $links, $settings_link );
+
 		return $links;
 	}
 
 	protected function version_check() {
 		// @todo Implement logic if we need to do anything if they're different.
 		// For now, just store the current version.
-		$options = get_option( $this->plugin_shortname );
+		$options = $this->get_options();
 		$options['version'] = $this->version;
-		update_option( $this->plugin_shortname, $options );
+		$updated = $this->update_options( $options );
+
+		return $updated;
 	}
 
 	/**
@@ -77,7 +110,8 @@ class WidontPartDeux {
 	}
 
 	public function filter_content( $content = '' ) {
-		$tags = $this->options['extended_tags'];
+		$options = $this->get_options();
+		$tags = $options['tags'];
 
 		if ( ! empty( $tags ) && preg_match_all( '#<(' . $tags . ')>(.+)</\1>#', $content, $matches ) ) {
 			foreach ( $matches[0] as $match ) {
@@ -96,18 +130,18 @@ class WidontPartDeux {
 	function plugin_register_settings() {
 		add_settings_section(
 			"{$this->plugin_shortname}_general_options",
-			__( 'Extended Post/Page Content Elements', $this->plugin_textdomain ),
+			__( 'Post/Page Content Tags', $this->plugin_textdomain ),
 			array( $this, 'widont_settings_header' ),
 			$this->plugin
 		);
 		add_settings_field(
-			'extended_tags',
-			__( 'HTML element names to filter*: ', $this->plugin_textdomain ),
-			array( $this, 'widont_extended_tags_input' ),
+			'tags',
+			__( 'Tags to filter in the post content*: ', $this->plugin_textdomain ),
+			array( $this, 'html_input_tags' ),
 			$this->plugin,
 			"{$this->plugin_shortname}_general_options",
 			array(
-				'label_for' => 'extended_tags',
+				'label_for' => 'tags',
 			)
 		);
 		register_setting(
@@ -130,16 +164,16 @@ HTML;
 		_e( $text, $this->plugin_textdomain );
 	}
 
-	function widont_extended_tags_input() {
-		$options = get_option( $this->plugin_shortname );
+	function html_input_tags() {
+		$options = $this->get_options();
 
 		$extended_tags = '';
-		if ( isset( $options['extended_tags'] ) ) {
-			$extended_tags = str_replace( '|', ' ', $options['extended_tags'] );
+		if ( isset( $options['tags'] ) ) {
+			$extended_tags = str_replace( '|', ' ', $options['tags'] );
 		}
 
 		$tags = esc_attr( $extended_tags );
-		$name = esc_attr( "$this->plugin_shortname[extended_tags]" );
+		$name = esc_attr( "$this->plugin_shortname[tags]" );
 		$description = __( '*Elements not allowed in posts will be automatically stripped.', $this->plugin_textdomain );
 
 		$input = <<<HTML
@@ -153,8 +187,7 @@ HTML;
 	function widont_validate_tags_input( $input ) {
 		if ( empty( $input ) ) return;
 
-		$newinput['tags'] = trim( $input['extended_tags'] );
-		$allowed_html = wp_kses_allowed_html( 'post' );
+		$newinput['tags'] = trim( $input['tags'] );
 		$elements = explode( ' ', $newinput['tags'] );
 		$elements2 = array();
 		foreach ( $elements as $element ) {
@@ -163,10 +196,12 @@ HTML;
 			$tag = "<$element>";
 			array_push( $elements2, $tag );
 		}
+
 		$filtered_elements = wp_kses_post( implode( $elements2 ) );
 		$newinput['tags'] = preg_replace( '#[\s,;<>]+#', '|', $filtered_elements );
+		$newinput['tags'] = trim( $newinput['tags'], '|' );
 
-		return trim( $newinput['tags'], '|' );
+		return $newinput;
 	}
 
 	function options_page() {
