@@ -187,7 +187,7 @@ HTML;
 	function widont_validate_tags_input( $input ) {
 		if ( empty( $input ) ) return;
 
-		$newinput['tags'] = trim( $input['tags'] );
+		$newinput['tags'] = preg_replace( '/[,;<>|\/\s]+/', ' ', trim( $input['tags'] ) );
 		$elements = explode( ' ', $newinput['tags'] );
 		$elements2 = array();
 		foreach ( $elements as $element ) {
@@ -196,9 +196,9 @@ HTML;
 			$tag = "<$element>";
 			array_push( $elements2, $tag );
 		}
-
+		$elements2 = array_unique( $elements2 );
 		$filtered_elements = wp_kses_post( implode( $elements2 ) );
-		$newinput['tags'] = preg_replace( '#[\s,;<>]+#', '|', $filtered_elements );
+		$newinput['tags'] = preg_replace( '#[\s<>]+#', '|', $filtered_elements );
 		$newinput['tags'] = trim( $newinput['tags'], '|' );
 
 		return $newinput;
