@@ -164,6 +164,10 @@ HTML;
 		_e( $text, $this->plugin_textdomain );
 	}
 
+	/**
+	 * Displays the input field in the options form.
+	 * @return string
+	 */
 	function html_input_tags() {
 		$options = $this->get_options();
 
@@ -184,26 +188,60 @@ HTML;
 		_e( $input );
 	}
 
+	/**
+	 * Validate and sanitize the input text field.
+	 *
+	 * @param  array $input An array of all options for the plugin.
+	 *
+	 * @return array The sanitized options to add to the database.
+	 */
 	function widont_validate_tags_input( $input ) {
 		if ( empty( $input ) ) return;
 
+		/**#@+
+		 * @var array
+		 */
+		$elements = array();
+		$elements2 = array();
+		$newinput = array();
+
+		/**#@+
+		 * @var string
+		 */
+		$newinput['tags'] = '';
+		/**
+		 * The tags that are allowed inside posts as filtered by WP.
+		 */
+		$filtered_elements = '';
+
+		// Strip out anything extra that may cause problems.
 		$newinput['tags'] = preg_replace( '/[,;<>|\/\s]+/', ' ', trim( $input['tags'] ) );
+
+		// Make a couple of arrays to use to filter through.
 		$elements = explode( ' ', $newinput['tags'] );
 		$elements2 = array();
+
+		/** Loop through the tags and make 'em look like actual tags so wp_kses_post will handle them properly. */
 		foreach ( $elements as $element ) {
-			// make 'em look like actual tags
 			$element = preg_replace( '/[<>]/', '', $element );
-			$tag = "<$element>";
-			array_push( $elements2, $tag );
+			array_push( $elements2, "<$element>" );
 		}
+
 		$elements2 = array_unique( $elements2 );
+
 		$filtered_elements = wp_kses_post( implode( $elements2 ) );
-		$newinput['tags'] = preg_replace( '#[\s<>]+#', '|', $filtered_elements );
+
+		$newinput['tags'] = preg_replace( '/[\s<>]+/', '|', $filtered_elements );
 		$newinput['tags'] = trim( $newinput['tags'], '|' );
 
 		return $newinput;
 	}
 
+	/**
+	 * The Settings page displayed.
+	 *
+	 * @return string HTML
+	 */
 	function options_page() {
 ?>
 	<div class="wrap">
