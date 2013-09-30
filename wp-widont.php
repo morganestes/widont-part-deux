@@ -1,6 +1,6 @@
 <?php
 /*
-Plugin Name: Widon't Part Deux
+Plugin Name: Widon’t Part Deux
 Plugin URI: https://github.com/morganestes/wp-widont
 Description: Eliminates widows in your post titles (and <a href="?page=wp-widont.php/wp-widont.php">posts</a>!) by inserting a non-breaking space between the last two words of a title. What is a widow? In typesetting, a widow is a single word on a line by itself at the end of a paragraph and is considered bad style.
 Version: 1.0.1
@@ -15,7 +15,7 @@ class WidontPartDeux {
 
 	protected $version = '1.0.1';
 	protected $plugin = '';
-	protected $plugin_name = "Widon't Part Deux";
+	protected $plugin_name = 'Widon’t Part Deux';
 	protected $plugin_shortname = 'widont_deux';
 	protected $text_domain = 'widont';
 
@@ -109,7 +109,7 @@ class WidontPartDeux {
 
 	function widont_settings_header() {
 		$text = <<<HTML
-		<p>With Widon&rsquo;t your post titles are spared unwanted widows. Extend that courtesy to other tags in your posts* by entering tag names below.</p>
+		<p>With Widon’t your post titles are spared unwanted widows. Extend that courtesy to other tags in your posts* by entering tag names below.</p>
 		<p>No need to include angle brackets. Separate multiple tag names with a space or comma (e.g. <code>h3 h4 h5</code> or <code>p, li, span</code>).</p>
 HTML;
 		_e( $text, $this->text_domain );
