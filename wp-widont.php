@@ -38,7 +38,6 @@ class WidontPartDeux {
 	}
 
 	public function init() {
-
 		$this->version_check();
 	}
 
@@ -57,6 +56,12 @@ class WidontPartDeux {
 		update_option( $this->plugin_shortname, $options );
 	}
 
+	/**
+	 * Parse the string and add a non-breaking space.
+	 *
+	 * @param $str string
+	 * @return string
+	 */
 	public function widont( $str = '' ) {
 		return preg_replace( '|([^\s])\s+([^\s]+)\s*$|', '$1&nbsp;$2', $str );
 	}
