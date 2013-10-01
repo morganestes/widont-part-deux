@@ -4,7 +4,7 @@ Donate link: http://www.morganestes.me/donate
 Tags: typography, widows, orphans, title
 Requires at least: 3.5
 Tested up to: 3.6.1
-Stable tag: 1.1.
+Stable tag: 1.1.1
 License: GPLv3
 
 Widon’t Part Deux eliminates typographic widows in the titles and content your posts and pages.
