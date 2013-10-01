@@ -3,7 +3,7 @@
 Plugin Name: Widon’t Part Deux
 Plugin URI: https://github.com/morganestes/wp-widont
 Description: Building on <a href="http://www.shauninman.com/archive/2008/08/25/widont_2_1_1" target="_blank">Shaun Inman’s plugin</a>, Widon’t Part Deux eliminates <a href="http://en.wikipedia.org/wiki/Widow_(typesetting)" target="_blank">widows</a> in the titles and content your posts and pages.
-Version: 1.1.0
+Version: 1.1.1
 Author: Morgan Estes
 Author URI: http://www.morganestes.me/
 License: GPLv3
@@ -16,7 +16,7 @@ class WidontPartDeux {
 	/**#@+
 	 * @var string
 	 */
-	protected $version = '1.1.0';
+	protected $version = '1.1.1';
 	/**
 	 * The normalized path to the plugin file. Set in the constructor.
 	 */
@@ -53,6 +53,7 @@ class WidontPartDeux {
 		add_filter( 'the_content', array( $this, 'filter_content' ) );
 
 		$this->version_check();
+		$this->add_starting_tags( 'p' );
 	}
 
 	/**
@@ -85,7 +86,7 @@ class WidontPartDeux {
 	 * @return array
 	 */
 	public function add_settings_link( $links ) {
-		$settings_link = "<a href='options-general.php?page={$this->plugin}'>Settings</a>";
+		$settings_link = '<a href="' . esc_url( "options-general.php?page={$this->plugin}" ) . '">Settings</a>';
 		array_unshift( $links, $settings_link );
 
 		return $links;
@@ -155,6 +156,21 @@ class WidontPartDeux {
 			$this->plugin_shortname,
 			array( $this, 'widont_validate_tags_input' )
 		);
+	}
+
+	/**
+	 * Start the plugin with some default tags for the content.
+	 *
+	 * @param str A space-separated string of tags to start with.
+	 */
+	function add_starting_tags( $tags = '' ) {
+		$options = $this->get_options();
+
+		if ( !isset( $options['tags'] ) || null == $options['tags'] ) {
+			$options['tags'] = $tags;
+			$filtered_tags = $this->widont_validate_tags_input( $options );
+			$this->update_options( $filtered_tags );
+		}
 	}
 
 	/**

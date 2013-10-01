@@ -48,6 +48,9 @@ The settings filter uses `wp_kses_post` to sanitize the tags you specify. By def
 
 == Changelog ==
 
+= 1.1.1 =
+* Added default tags for post content filtering.
+
 = 1.1.0 =
 * Enable validation and sanitization of the options input.
 * Use the Settings API to get and store options in the database.
