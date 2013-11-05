@@ -3,7 +3,7 @@
 Plugin Name: Widon’t Part Deux
 Plugin URI: https://github.com/morganestes/wp-widont
 Description: Building on <a href="http://www.shauninman.com/archive/2008/08/25/widont_2_1_1" target="_blank">Shaun Inman’s plugin</a>, Widon’t Part Deux eliminates <a href="http://en.wikipedia.org/wiki/Widow_(typesetting)" target="_blank">widows</a> in the titles and content your posts and pages.
-Version: 1.1.2
+Version: 1.2.0
 Author: Morgan Estes
 Author URI: http://www.morganestes.me/
 License: GPLv3
@@ -14,7 +14,7 @@ class WidontPartDeux {
 	/**#@+
 	 * @var string
 	 */
-	protected $version = '1.1.2';
+	protected $version = '1.2.0';
 	/**
 	 * The normalized path to the plugin file. Set in the constructor.
 	 */

@@ -4,7 +4,7 @@ Donate link: http://www.morganestes.me/donate
 Tags: typography, widows, orphans, title
 Requires at least: 3.5
 Tested up to: 3.7.1
-Stable tag: 1.1.2
+Stable tag: 1.2.0
 License: GPLv3
 
 Widon’t Part Deux eliminates typographic widows in the titles and content your posts and pages.
@@ -48,7 +48,7 @@ The settings filter uses `wp_kses_post` to sanitize the tags you specify. By def
 
 == Changelog ==
 
-= 1.1.2 =
+= 1.2.0 =
 * Fixed "smart" quotes that weren't displayed properly on WordPress.org/plugins.
 * Made compatible with PHP 5.2 since a number of hosts still use that version and it's supported by WordPress itself.
 
