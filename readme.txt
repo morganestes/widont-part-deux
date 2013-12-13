@@ -3,15 +3,15 @@ Contributors: morganestes
 Donate link: http://www.morganestes.me/donate
 Tags: typography, widows, orphans, title
 Requires at least: 3.5
-Tested up to: 3.7.1
+Tested up to: 3.8
 Stable tag: 1.2.0
 License: GPLv3
 
-Widon’t Part Deux eliminates typographic widows in the titles and content your posts and pages.
+Widon't Part Deux eliminates typographic widows in the titles and content your posts and pages.
 
 == Description ==
 
-Building on <a href="http://www.shauninman.com/archive/2008/08/25/widont_2_1_1" target="_blank">Shaun Inman’s plugin</a>, Widon’t Part Deux eliminates <a href="http://en.wikipedia.org/wiki/Widow_(typesetting)" target="_blank">widows</a> in the titles and content your posts and pages.
+Building on <a href="http://www.shauninman.com/archive/2008/08/25/widont_2_1_1" target="_blank">Shaun Inman's plugin</a>, Widon't Part Deux eliminates <a href="http://en.wikipedia.org/wiki/Widow_(typesetting)" target="_blank">widows</a> in the titles and content your posts and pages.
 
 == Installation ==
 
