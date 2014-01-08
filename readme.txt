@@ -4,7 +4,7 @@ Donate link: http://www.morganestes.me/donate
 Tags: typography, widows, orphans, title
 Requires at least: 3.5
 Tested up to: 3.9
-Stable tag: 1.3.0
+Stable tag: 1.3.1
 License: GPLv3
 
 Widon't Part Deux eliminates typographic widows in the titles and content your posts and pages.
@@ -47,6 +47,9 @@ Because you want your site to be as usable for your visitors as possible. This w
 The settings filter uses `wp_kses_post` to sanitize the tags you specify. By default, this is set in [`wp-includes/kses.php`](http://core.trac.wordpress.org/browser/tags/3.6.1/wp-includes/kses.php#L56).
 
 == Changelog ==
+
+= 1.3.1 =
+Removed debugging code that shouldn't be in production. Oops.
 
 = 1.3.0 =
 * Fixed issue where oEmbed-generated iframes weren't loading. [Props hacknug](https://github.com/morganestes/widont-part-deux/issues/1).
