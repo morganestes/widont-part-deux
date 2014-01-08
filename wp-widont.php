@@ -3,7 +3,7 @@
 Plugin Name: Widon’t Part Deux
 Plugin URI: https://github.com/morganestes/wp-widont
 Description: Building on <a href="http://www.shauninman.com/archive/2008/08/25/widont_2_1_1" target="_blank">Shaun Inman’s plugin</a>, Widon’t Part Deux eliminates <a href="http://en.wikipedia.org/wiki/Widow_(typesetting)" target="_blank">widows</a> in the titles and content your posts and pages.
-Version: 1.2.0
+Version: 1.3.0
 Author: Morgan Estes
 Author URI: http://www.morganestes.me/
 License: GPLv3
@@ -14,14 +14,13 @@ class WidontPartDeux {
 	/**#@+
 	 * @var string
 	 */
-	protected $version = '1.2.0';
+	protected $version = '1.3.0';
 	/**
 	 * The normalized path to the plugin file. Set in the constructor.
 	 */
 	protected $plugin = '';
-	protected $plugin_name = "Widon't Part Deux";
+	protected $plugin_name = 'Widon&#8217;t Part Deux';
 	protected $plugin_shortname = 'widont_deux';
-	protected $plugin_textdomain = 'widont';
 	/**#@-*/
 
 	/**
@@ -49,6 +48,9 @@ class WidontPartDeux {
 		// Content filters
 		add_filter( 'the_title', array( $this, 'widont' ) );
 		add_filter( 'the_content', array( $this, 'filter_content' ) );
+
+		// Localization support
+		load_plugin_textdomain( 'widont', false, basename( dirname( __FILE__ ) ) . '/lang/' );
 
 		$this->version_check();
 		$this->add_starting_tags( 'p' );
@@ -111,7 +113,7 @@ class WidontPartDeux {
 	 * @return string
 	 */
 	public function widont( $str = '' ) {
-		return preg_replace( '|([^\s])\s+([^\s]+)\s*$|', '$1&nbsp;$2', $str );
+		return preg_replace( '/([^\s])\s+([^\s]+)\s*$/', '$1&nbsp;$2', $str );
 	}
 
 	public function filter_content( $content = '' ) {
@@ -120,10 +122,39 @@ class WidontPartDeux {
 
 		if ( ! empty( $tags ) && preg_match_all( '#<(' . $tags . ')>(.+)</\1>#', $content, $matches ) ) {
 			foreach ( $matches[0] as $match ) {
-				$content = str_replace( $match, $this->widont( $match ), $content );
+				Debug_Bar_Extender::instance()->trace_var( $match );
+				if ( $this->safe_to_filter( $match ) ) {
+					Debug_Bar_Extender::instance()->trace_var( $this->widont( $match ) );
+					$content = str_replace( $match, $this->widont( $match ), $content );
+				}
 			}
 		}
 		return $content;
+	}
+
+	/**
+	 * Check if the string is safe to filter.
+
+	 * If an oEmbed (or any iframe, really) is used an iframe tag is generated.
+	 * We need to take care to not look inside this, or any other specified tag, so we don't
+	 * accidentally add in a break inside the tag itself (all spaces should be added to the text
+	 * inside an element, not in the tag.
+	 *
+	 * @param $string
+	 *
+	 * @return bool
+	 */
+	public function safe_to_filter( $string ) {
+		$unsafe_tags = array( 'iframe', 'script', 'style', 'embed', 'object', 'video', 'audio' );
+		$is_safe   = true;
+
+		foreach ( $unsafe_tags as $tag ) {
+			if ( preg_match( "#<$tag#", $string ) ) {
+				$is_safe = false;
+			}
+		}
+
+		return $is_safe;
 	}
 
 	public function plugin_preferences_menu() {
@@ -135,13 +166,13 @@ class WidontPartDeux {
 	function plugin_register_settings() {
 		add_settings_section(
 			"{$this->plugin_shortname}_general_options",
-			__( 'Post/Page Content Tags', $this->plugin_textdomain ),
+			__( 'Post/Page Content Tags', 'widont' ),
 			array( $this, 'widont_settings_header' ),
 			$this->plugin
 		);
 		add_settings_field(
 			'tags',
-			__( 'Tags to filter in the post content*: ', $this->plugin_textdomain ),
+			__( 'Tags to filter in the post content*: ', 'widont' ),
 			array( $this, 'html_input_tags' ),
 			$this->plugin,
 			"{$this->plugin_shortname}_general_options",
@@ -159,7 +190,7 @@ class WidontPartDeux {
 	/**
 	 * Start the plugin with some default tags for the content.
 	 *
-	 * @param str A space-separated string of tags to start with.
+	 * @param string $tags A space-separated string of tags to start with.
 	 */
 	function add_starting_tags( $tags = '' ) {
 		$options = $this->get_options();
@@ -181,7 +212,7 @@ class WidontPartDeux {
 		<p>With Widon’t your post titles are spared unwanted widows. Extend that courtesy to other tags in your posts* by entering tag names below.</p>
 		<p>No need to include angle brackets. Separate multiple tag names with a space or comma (e.g. <code>h3 h4 h5</code> or <code>p, li, span</code>).</p>
 HTML;
-		_e( $text, $this->plugin_textdomain );
+		_e( $text, 'widont' );
 	}
 
 	/**
@@ -198,7 +229,7 @@ HTML;
 
 		$tags = esc_attr( $extended_tags );
 		$name = esc_attr( "$this->plugin_shortname[tags]" );
-		$description = __( '*Elements not allowed in posts will be automatically stripped.', $this->plugin_textdomain );
+		$description = __( '*Elements not allowed in posts will be automatically stripped.', 'widont' );
 
 		$input = <<<HTML
 		<input type="text" name="$name" id="extended_tags" class="regular-text code" value="$tags" />
@@ -259,23 +290,24 @@ HTML;
 
 	/**
 	 * The Settings page displayed.
-	 *
-	 * @return string HTML
 	 */
 	function options_page() {
-?>
-	<div class="wrap">
-		<?php screen_icon(); ?>
-		<h2><?php  _e( "{$this->plugin_name} Options", $this->plugin_textdomain ); ?></h2>
-		<form method="post" action="options.php">
-		<?php
+		echo '<div class="wrap">';
+
+		/* screen_icon was deprecated in 3.8 */
+		if ( version_compare( $GLOBALS['wp_version'], '3.8', '<' ) ) {
+			screen_icon();
+		}
+
+		_e( sprintf( '<h2>%s Options</h2>', $this->plugin_name ), 'widont' );
+		echo '<form method="post" action="options.php">';
+
 		settings_fields( $this->plugin_shortname );
 		do_settings_sections( $this->plugin );
-		submit_button( __( 'Update Preferences', $this->plugin_textdomain ) );
-?>
-		</form>
-	</div>
-<?php }
+		submit_button( __( 'Update Preferences', 'widont' ) );
+
+		echo '</form></div>';
+	}
 
 }
 
