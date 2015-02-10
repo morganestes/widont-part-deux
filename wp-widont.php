@@ -113,9 +113,33 @@ class WidontPartDeux {
 	 * @return string
 	 */
 	public function widont( $str = '' ) {
-		return preg_replace( '/([^\s])\s+([^\s]+)\s*$/', '$1&nbsp;$2', $str );
+		//return preg_replace( '/([^\s])\s+([^\s]+)\s*$/', '$1&nbsp;$2', $str );
+		$space = ( ' ','  ',"&ensp;","&#8194;","&emsp;","&#8195;","&#8197;","&#x2005;","&thinsp;","&#8201;","&#12288;","&#x3000;","&#009;");
+
+		if ( ! empty($chars)) {
+			$chars = explode(',',$chars);
+
+			foreach ($chars as $char) {
+				array_push($space, $char);
+			}
+		}
+
+		$arr = explode( $space, $str );
+
+		if(count($arr) >= 2) {
+			$arr[count($arr) - 2].= '&nbsp;'.$arr[count($arr) - 1];
+			array_pop($arr);
+			$str = implode(' ',$arr);
+
+		}
+		return $str;
 	}
 
+	/**
+	 * @param string $content
+	 *
+	 * @return mixed|string
+	 */
 	public function filter_content( $content = '' ) {
 		$options = $this->get_options();
 		$tags = $options['tags'];
@@ -178,6 +202,16 @@ class WidontPartDeux {
 			"{$this->plugin_shortname}_general_options",
 			array(
 				'label_for' => 'tags',
+			)
+		);
+		add_settings_field(
+			'chars',
+			__( 'Chars to filter in the post content*: ', 'widont' ),
+			array( $this, 'html_input_tags' ),
+			$this->plugin,
+			"{$this->plugin_shortname}_general_options",
+			array(
+				'label_for' => 'chars',
 			)
 		);
 		register_setting(
