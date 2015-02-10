@@ -124,7 +124,7 @@ class WidontPartDeux {
 			}
 		}
 
-		$arr = explode( $space, $str );
+		$arr = explode($space[0], str_replace($space, $space[0], $str));
 
 		if(count($arr) >= 2) {
 			$arr[count($arr) - 2].= '&nbsp;'.$arr[count($arr) - 1];
